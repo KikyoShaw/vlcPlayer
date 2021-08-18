@@ -77,7 +77,7 @@ int vlcPlayerManager::PlayUrl(QString url, void* hwnd)
 {
 	//if (this->IsPlaying())
 		//this->Stop();
-	StopPlaying();
+	Stop();
 	libvlc_media_t *media;
 	media = libvlc_media_new_location(m_pVLC_Inst, url.toStdString().data());
 	if (media){
