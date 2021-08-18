@@ -1,0 +1,25 @@
+<UI version="4.0" >
+ <class>vlcPlayerClass</class>
+ <widget class="QWidget" name="vlcPlayerClass" >
+  <property name="objectName" >
+   <string notr="true">vlcPlayerClass</string>
+  </property>
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>600</width>
+    <height>400</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>vlcPlayer</string>
+  </property>$centralwidget$
+ </widget>
+ <layoutDefault spacing="6" margin="11" />
+ <pixmapfunction></pixmapfunction>
+ <resources>
+   <include location="vlcPlayer.qrc"/>
+ </resources>
+ <connections/>
+</UI>

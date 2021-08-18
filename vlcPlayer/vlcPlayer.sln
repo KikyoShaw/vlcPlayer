@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.1525
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vlcPlayer", "vlcPlayer\vlcPlayer.vcxproj", "{A8BDF5B2-6510-42AD-8B4C-4912004806EC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A8BDF5B2-6510-42AD-8B4C-4912004806EC}.Debug|x86.ActiveCfg = Debug|Win32
+		{A8BDF5B2-6510-42AD-8B4C-4912004806EC}.Debug|x86.Build.0 = Debug|Win32
+		{A8BDF5B2-6510-42AD-8B4C-4912004806EC}.Release|x86.ActiveCfg = Release|Win32
+		{A8BDF5B2-6510-42AD-8B4C-4912004806EC}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		Qt5Version = Qt5.12.11_msvc2017_32
+		SolutionGuid = {91F13A27-D99B-4E23-B1B1-7412DB7BE721}
+	EndGlobalSection
+EndGlobal
