@@ -137,7 +137,9 @@ void vlcPlayer::sltVlcMediaPlayerVount(int sec)
 		ui.widget_title_top->setProgressDuration(m_totalTime);
 		updateVlcPlayerTime(0);
 	}
-	ui.widget_title_top->setPlaying(true);
+	if (!m_isFinishPlay) {
+		ui.widget_title_top->setPlaying(true);
+	}
 }
 
 void vlcPlayer::sltVlcMediaPlayerTimeChange(int sec)

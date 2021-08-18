@@ -7,24 +7,20 @@ static void handleEvents(const libvlc_event_t *event, void *userData)
 {
 	vlcPlayerManager* obj = (vlcPlayerManager*)userData;
 
-	switch (event->type) 
-	{
+	switch (event->type) {
 	// 加载完成
-	case libvlc_MediaPlayerVout:
-	{
+	case libvlc_MediaPlayerVout:{
 		emit obj->playAllTime(obj->GetTime() / 1000);
 		break;
 	}
 	// media player 位置改变
-	case libvlc_MediaPlayerPositionChanged: 
-	{
+	case libvlc_MediaPlayerPositionChanged: {
 		int time = obj->GetPlayTime();
 		emit obj->playCurrentTime(time / 1000);
 		break;
 	}
 	// 播放完成
-	case libvlc_MediaPlayerEndReached:
-	{
+	case libvlc_MediaPlayerEndReached:{
 		obj->GetPlayState();
 		obj->PlayEnd();
 		break;
@@ -59,14 +55,12 @@ int vlcPlayerManager::Play(QString filename, void* hwnd)
 	}
 	if (this->IsPlaying())
 		this->Stop();
-	libvlc_media_t *m;
-	m = libvlc_media_new_path(m_pVLC_Inst, filename.toStdString().data());
-	if (m)
-	{
-		m_pVLC_Player = libvlc_media_player_new_from_media(m);
-		if (m_pVLC_Player)
-		{
-			libvlc_media_release(m);
+	libvlc_media_t *media;
+	media = libvlc_media_new_path(m_pVLC_Inst, filename.toStdString().data());
+	if (media){
+		m_pVLC_Player = libvlc_media_player_new_from_media(media);
+		if (m_pVLC_Player){
+			libvlc_media_release(media);
 			m_pVLC_eMg = libvlc_media_player_event_manager(m_pVLC_Player);
 			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerVout, handleEvents, this);
 			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerEndReached, handleEvents, this);
@@ -81,8 +75,9 @@ int vlcPlayerManager::Play(QString filename, void* hwnd)
 
 int vlcPlayerManager::PlayUrl(QString url, void* hwnd)
 {
-	if (this->IsPlaying())
-		this->Stop();
+	//if (this->IsPlaying())
+		//this->Stop();
+	StopPlaying();
 	libvlc_media_t *media;
 	media = libvlc_media_new_location(m_pVLC_Inst, url.toStdString().data());
 	if (media){
@@ -93,9 +88,10 @@ int vlcPlayerManager::PlayUrl(QString url, void* hwnd)
 			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerVout, handleEvents, this);
 			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerEndReached, handleEvents, this);
 			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerPositionChanged, handleEvents, this);
-			if (hwnd != nullptr)
+			if (hwnd != nullptr) {
 				libvlc_media_player_set_hwnd(m_pVLC_Player, hwnd);
-			Play();
+				Play();
+			}
 		}
 	}
 	return -1;
@@ -128,16 +124,14 @@ int vlcPlayerManager::Play()
 
 void vlcPlayerManager::Pause()
 {
-	if (m_pVLC_Player)
-	{
+	if (m_pVLC_Player){
 		libvlc_media_player_pause(m_pVLC_Player);
 	}
 }
 
 void vlcPlayerManager::Stop()
 {
-	if (m_pVLC_Player)
-	{
+	if (m_pVLC_Player){
 		if (GetPlayState() != libvlc_Ended) {
 			libvlc_media_player_pause(m_pVLC_Player);
 			libvlc_media_player_stop(m_pVLC_Player);
@@ -150,24 +144,21 @@ void vlcPlayerManager::Stop()
 
 void vlcPlayerManager::StopPlaying()
 {
-	if (m_pVLC_Player)
-	{
+	if (m_pVLC_Player){
 		libvlc_media_player_stop(m_pVLC_Player);
 	}
 }
 
 void vlcPlayerManager::SetVolume(int nVol)
 {
-	if (m_pVLC_Player)
-	{
+	if (m_pVLC_Player){
 		libvlc_audio_set_volume(m_pVLC_Player, nVol);
 	}
 }
 
 int vlcPlayerManager::GetVolume()
 {
-	if (m_pVLC_Player)
-	{
+	if (m_pVLC_Player){
 		return libvlc_audio_get_volume(m_pVLC_Player);
 	}
 	return 0;
@@ -175,8 +166,7 @@ int vlcPlayerManager::GetVolume()
 
 void vlcPlayerManager::SeekTo(float nPos)
 {
-	if (m_pVLC_Player)
-	{
+	if (m_pVLC_Player){
 		libvlc_media_player_set_position(m_pVLC_Player, nPos);
 	}
 }
@@ -188,8 +178,7 @@ bool vlcPlayerManager::IsOpen()
 
 bool vlcPlayerManager::IsPlaying()
 {
-	if (m_pVLC_Player)
-	{
+	if (m_pVLC_Player){
 		return libvlc_media_player_is_playing(m_pVLC_Player);
 	}
 	return false;
@@ -198,11 +187,9 @@ bool vlcPlayerManager::IsPlaying()
 bool vlcPlayerManager::IsPause()
 {
 	bool tem;
-	if (m_pVLC_Player)
-	{
+	if (m_pVLC_Player){
 		int state = libvlc_media_player_get_state(m_pVLC_Player);
-		switch (state)
-		{
+		switch (state){
 		case libvlc_Paused:
 		case libvlc_Stopped:
 			tem = true;
@@ -224,8 +211,7 @@ bool vlcPlayerManager::IsEndPlaying()
 
 int vlcPlayerManager::GetPos()
 {
-	if (m_pVLC_Player)
-	{
+	if (m_pVLC_Player){
 		return (int)(100 * libvlc_media_player_get_position(m_pVLC_Player));
 	}
 
@@ -234,8 +220,7 @@ int vlcPlayerManager::GetPos()
 
 int64_t vlcPlayerManager::GetTime()
 {
-	if (m_pVLC_Player)
-	{
+	if (m_pVLC_Player){
 		return libvlc_media_player_get_length(m_pVLC_Player);
 	}
 
@@ -244,8 +229,7 @@ int64_t vlcPlayerManager::GetTime()
 
 int64_t vlcPlayerManager::GetPlayTime()
 {
-	if (m_pVLC_Player)
-	{
+	if (m_pVLC_Player){
 		return libvlc_media_player_get_time(m_pVLC_Player);
 	}
 
@@ -254,8 +238,7 @@ int64_t vlcPlayerManager::GetPlayTime()
 
 void vlcPlayerManager::SetPlayTime(int64_t time)
 {
-	if (m_pVLC_Player)
-	{
+	if (m_pVLC_Player){
 		libvlc_media_player_set_time(m_pVLC_Player, time);
 	}
 }
@@ -278,15 +261,13 @@ bool vlcPlayerManager::setTrack(int trackIndex)
 
 void vlcPlayerManager::Release()
 {
-	if (m_pVLC_Player)
-	{
+	if (m_pVLC_Player){
 		libvlc_media_player_stop(m_pVLC_Player);
 		libvlc_media_player_release(m_pVLC_Player);
 		m_pVLC_Player = NULL;
 
 	}
-	if (m_pVLC_Inst)
-	{
+	if (m_pVLC_Inst){
 		libvlc_release(m_pVLC_Inst);
 		m_pVLC_Inst = NULL;
 	}
