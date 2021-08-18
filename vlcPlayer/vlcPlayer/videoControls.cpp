@@ -5,7 +5,7 @@ VideoControls::VideoControls(QWidget *parent)
 	:QWidget(parent)
 {
 	ui.setupUi(this);
-	setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
+	setWindowFlags(Qt::FramelessWindowHint/* | Qt::Tool*/);
 	setAttribute(Qt::WA_TranslucentBackground);
 
 	initVolumeSlider();
@@ -44,10 +44,15 @@ void VideoControls::setProgressText(const QString & text)
 	ui.label_volumNum->setText(text);
 }
 
-void VideoControls::setPlaying()
+void VideoControls::setPlaying(bool state)
 {
 	//启用播放/暂停按钮，并将其文本设置为“暂停”
-	ui.pushButton_play->setChecked(true);
+	ui.pushButton_play->setChecked(state);
+}
+
+void VideoControls::setVoiceValue(int value)
+{
+	m_volumeSlider->setVoiceValue(value);
 }
 
 bool VideoControls::getVolumVisible()
@@ -64,7 +69,6 @@ void VideoControls::initVolumeSlider()
 	if (m_volumeSlider) {
 		m_volumeSlider->installEventFilter(this);
 		m_volumeSlider->setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
-		m_volumeSlider->setVoiceValue(50);
 		connect(m_volumeSlider.data(), &VSliderWidget::sigValueChanged, this, &VideoControls::sltSoundVoiceValue);
 	}
 }

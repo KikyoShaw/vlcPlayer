@@ -1,62 +1,148 @@
 #include "vlcPlayer.h"
 #include <QMouseEvent>
 #include "videoControls.h"
+#include "vlcPlayerManager.h"
+#include <QThread>
+#include <QFileDialog>
 
 vlcPlayer::vlcPlayer(QWidget *parent)
-    : QWidget(parent), m_bMove(false), m_point(QPoint())
+    : QWidget(parent), m_bMove(false), m_point(QPoint()), 
+	m_totalTime(0), m_volumn(50), m_isFinishPlay(false)
 {
     ui.setupUi(this);
 	setWindowFlags(Qt::FramelessWindowHint | Qt::WindowSystemMenuHint | Qt::WindowMinimizeButtonHint);
-	setAttribute(Qt::WA_TranslucentBackground);
-
+	//setAttribute(Qt::WA_TranslucentBackground);
+	ui.lineEdit_search->setText("http://vfx.mtime.cn/Video/2019/03/14/mp4/190314223540373995.mp4");
 	ui.widget_player->installEventFilter(this);
 
 	initVideoControls();
+	initVlcPlayer();
 
 	connect(ui.pushButton_min, &QPushButton::clicked, this, &vlcPlayer::showMinimized);
 	connect(ui.pushButton_close, &QPushButton::clicked, this, &vlcPlayer::close);
 	connect(ui.pushButton_max, &QPushButton::clicked, this, &vlcPlayer::sltMaxOrNormal);
+	connect(ui.pushButton_find, &QPushButton::clicked, this, &vlcPlayer::sltPlayVlcByLink);
+	connect(ui.pushButton_local, &QPushButton::clicked, this, &vlcPlayer::sltPlayVlcByLocal);
 }
 
 vlcPlayer::~vlcPlayer()
 {
+	if (m_vlcPlayer){
+		m_vlcPlayer->Release();
+	}
+	if (m_thread){
+		m_thread->quit();
+		m_thread->wait();
+	}
+}
+
+void vlcPlayer::initVlcPlayer()
+{
+	m_vlcPlayer = new vlcPlayerManager(this);
+	if (m_vlcPlayer) {
+		m_thread = new QThread(this);
+		if (m_thread) {
+			m_thread->moveToThread(m_thread);
+			m_thread->start();
+		}
+		//初始化vlc
+		m_vlcPlayer->initVlc();
+		//连接信号与槽
+		connect(m_vlcPlayer, &vlcPlayerManager::playAllTime, this, &vlcPlayer::sltVlcMediaPlayerVount);
+		connect(m_vlcPlayer, &vlcPlayerManager::playCurrentTime, this, &vlcPlayer::sltVlcMediaPlayerTimeChange);
+	}
 }
 
 void vlcPlayer::initVideoControls()
 {
-	m_videoControls = QSharedPointer<VideoControls>(new VideoControls(this));
-	if (m_videoControls) {
-		m_videoControls->installEventFilter(this);
-		connect(m_videoControls.data(), &VideoControls::sigVideoPlayOrPause, this, &vlcPlayer::sltVideoPlayOrPause);
-		connect(m_videoControls.data(), &VideoControls::sigSetPosition, this, &vlcPlayer::sltSetPosition);
-		connect(m_videoControls.data(), &VideoControls::sigSoundVoiceValue, this, &vlcPlayer::sltSoundVoiceValue);
-	}
+	ui.widget_title_top->setVoiceValue(m_volumn);
+	connect(ui.widget_title_top, &VideoControls::sigVideoPlayOrPause, this, &vlcPlayer::sltVideoPlayOrPause);
+	connect(ui.widget_title_top, &VideoControls::sigSetPosition, this, &vlcPlayer::sltSetPosition);
+	connect(ui.widget_title_top, &VideoControls::sigSoundVoiceValue, this, &vlcPlayer::sltSoundVoiceValue);
 }
 
-void vlcPlayer::locateWidgets()
+void vlcPlayer::updateVlcPlayerTime(int sec)
 {
-	if (m_videoControls) {
-		int posX = ui.widget_player->x();
-		int posY = ui.widget_top->height() + ui.widget_player->height() + 6 - m_videoControls->height();
-		m_videoControls->setFixedWidth(width() - posX - 20);
-		m_videoControls->move(mapToGlobal(QPoint(posX, posY)));
-		m_videoControls->locateWidgets();
+	QString currentMin = sec / 60 < 10 ? QString("0%1").arg(sec / 60) : QString::number(sec / 60);
+	QString currentSecond = sec % 60 < 10 ? QString("0%1").arg(sec % 60) : QString::number(sec % 60);
+	QString totalMin = m_totalTime / 60 < 10 ? QString("0%1").arg(m_totalTime / 60) : QString::number(m_totalTime / 60);
+	QString totalSecond = m_totalTime % 60 < 10 ? QString("0%1").arg(m_totalTime % 60) : QString::number(m_totalTime % 60);
+	ui.widget_title_top->setProgressText(QString("%1:%2/%3:%4").arg(currentMin).arg(currentSecond).arg(totalMin).arg(totalSecond));
+	// 刷新进度条
+	ui.widget_title_top->setSliderPosition(sec);
+	if (sec == m_totalTime) {
+		m_isFinishPlay = true;
+		ui.widget_title_top->setPlaying(false);
 	}
 }
 
 void vlcPlayer::sltVideoPlayOrPause(bool state)
 {
-
+	if (!state) {
+		m_vlcPlayer->Pause();
+	}
+	else {
+		if (m_isFinishPlay) {
+			m_vlcPlayer->StopPlaying();
+			m_isFinishPlay = false;
+		}
+		m_vlcPlayer->Play();
+	}
 }
 
 void vlcPlayer::sltSoundVoiceValue(int value)
 {
-
+	if (m_vlcPlayer){
+		m_vlcPlayer->SetVolume(value);
+	}
 }
 
 void vlcPlayer::sltSetPosition(int value)
 {
+	if (m_vlcPlayer){
+		m_vlcPlayer->SetPlayTime(value * 1000);
+	}
+}
 
+void vlcPlayer::sltPlayVlcByLink()
+{
+	auto linkUrl = ui.lineEdit_search->text();
+	if (!linkUrl.isEmpty()) {
+		if (m_vlcPlayer) {
+			m_vlcPlayer->PlayUrl(linkUrl, (void*)ui.widget_player->winId());
+		}
+	}
+}
+
+void vlcPlayer::sltPlayVlcByLocal()
+{
+	auto fileList = QFileDialog::getOpenFileNames(this,
+		QStringLiteral("选择媒体文件"),
+		".",
+		QStringLiteral("媒体文件(*.avi *.mp4 *.flv *.mkv*.mp3 *.wav *.wma);"));
+
+	if (fileList.isEmpty()) return;
+	//播放第一个
+	auto filePath = fileList.takeFirst();
+	if (m_vlcPlayer) {
+		m_vlcPlayer->PlayUrl(filePath, (void*)ui.widget_player->winId());
+	}
+}
+
+void vlcPlayer::sltVlcMediaPlayerVount(int sec)
+{
+	if (m_vlcPlayer) {
+		// 保存视频的总长度
+		m_totalTime = m_vlcPlayer->GetTime() / 1000;
+		ui.widget_title_top->setProgressDuration(m_totalTime);
+		updateVlcPlayerTime(0);
+	}
+	ui.widget_title_top->setPlaying(true);
+}
+
+void vlcPlayer::sltVlcMediaPlayerTimeChange(int sec)
+{
+	updateVlcPlayerTime(sec);
 }
 
 void vlcPlayer::sltMaxOrNormal()
@@ -95,67 +181,10 @@ void vlcPlayer::mouseReleaseEvent(QMouseEvent * event)
 	QWidget::mouseReleaseEvent(event);
 }
 
-void vlcPlayer::showEvent(QShowEvent * event)
-{
-	QWidget::showEvent(event);
-	locateWidgets();
-}
-
 void vlcPlayer::closeEvent(QCloseEvent * event)
 {
-	if (m_videoControls) {
-		m_videoControls->closeWidget();
+	if (m_vlcPlayer){
+		m_vlcPlayer->Stop();
 	}
 	QWidget::closeEvent(event);
-}
-
-void vlcPlayer::moveEvent(QMoveEvent * event)
-{
-	QWidget::moveEvent(event);
-	locateWidgets();
-}
-
-void vlcPlayer::hideEvent(QHideEvent * event)
-{
-	if (m_videoControls) {
-		m_videoControls->setVisible(false);
-	}
-	locateWidgets();
-	QWidget::hideEvent(event);
-}
-
-void vlcPlayer::resizeEvent(QResizeEvent * event)
-{
-	QWidget::resizeEvent(event);
-	locateWidgets();
-}
-
-bool vlcPlayer::eventFilter(QObject * obj, QEvent * event)
-{
-	if (obj == Q_NULLPTR) {
-		return false;
-	}
-	if (m_videoControls == Q_NULLPTR) {
-		return false;
-	}
-
-	if (QEvent::Enter == event->type()) {
-		if (obj == ui.widget_player || obj == m_videoControls) {
-			/*if (QMediaPlayer::StoppedState != m_videoPlayer->state()) {
-				m_videoControls->setVisible(true);
-			}*/
-			m_videoControls->setVisible(true);
-			return false;
-		}
-	}
-	else if (QEvent::Leave == event->type()) {
-		if (obj != ui.widget_player || obj != m_videoControls) {
-			auto volumIsVisible = m_videoControls->getVolumVisible();
-			if (!volumIsVisible) {
-				m_videoControls->setVisible(false);
-			}
-			return false;
-		}
-	}
-	return QWidget::eventFilter(obj, event);
 }

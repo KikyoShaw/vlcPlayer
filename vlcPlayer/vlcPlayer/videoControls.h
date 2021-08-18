@@ -19,7 +19,9 @@ public:
 	//进度时间
 	void setProgressText(const QString& text);
 	//播放状态
-	void setPlaying();
+	void setPlaying(bool state);
+	//设置声音
+	void setVoiceValue(int value);
 	//获取声音窗口出现情况
 	bool getVolumVisible();
 	//窗口管理
