@@ -15,8 +15,7 @@
     <Keyword>QtVS_v304</Keyword>
     <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'">10.0.17763.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">10.0.17763.0</WindowsTargetPlatformVersion>
-    <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')"
-      >$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
+    <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="Configuration">
@@ -41,11 +40,8 @@
     <QtModules>core;gui;widgets</QtModules>
     <QtBuildConfig>release</QtBuildConfig>
   </PropertyGroup>
-  <Target Name="QtMsBuildNotFound"
-    BeforeTargets="CustomBuild;ClCompile"
-    Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
-    <Message Importance="High"
-      Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />
+  <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
+    <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />
   </Target>
   <ImportGroup Label="ExtensionSettings" />
   <ImportGroup Label="Shared" />
@@ -89,12 +85,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <QtRcc Include="vlcPlayer.qrc"/>
-    <QtUic Include="vlcPlayer.ui"/>
-    <QtMoc Include="vlcPlayer.h"/>
-    <ClCompile Include="vlcPlayer.cpp"/>
-    <ClCompile Include="main.cpp"/>
-
+    <ClCompile Include="vsliderwidget.cpp" />
+    <QtRcc Include="vlcPlayer.qrc" />
+    <QtUic Include="videoControls.ui" />
+    <QtUic Include="vlcPlayer.ui" />
+    <QtMoc Include="vlcPlayer.h" />
+    <ClCompile Include="customslider.cpp" />
+    <ClCompile Include="videoControls.cpp" />
+    <ClCompile Include="vlcPlayer.cpp" />
+    <ClCompile Include="main.cpp" />
+    <QtUic Include="vsliderwidget.ui" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="videoControls.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="customslider.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="vsliderwidget.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

@@ -6,5 +6,8 @@
         <file>qrc/ico_gb.png</file>
         <file>qrc/ico_max.png</file>
         <file>qrc/ico_min.png</file>
+        <file>qrc/yyf_ico_yl.png</file>
+        <file>qrc/yinliang_bg.png</file>
+        <file>qrc/yuan.png</file>
     </qresource>
 </RCC>

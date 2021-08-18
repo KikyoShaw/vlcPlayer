@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>VSliderWidget</class>
+ <widget class="QWidget" name="VSliderWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>92</width>
+    <height>170</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>60</width>
+    <height>170</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>92</width>
+    <height>170</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">#label_icon
+{
+	background: rgba(122,126,135,100%);
+	border-radius: 4px;
+}
+
+#pushButton
+{
+	background: transparent;
+}
+
+#widget_button
+{
+	background-color: rgba(46,54,68,1);
+}
+
+QSlider
+{
+    border-color: rgba(52,7,91,100%);
+}
+
+QSlider::groove:vertical 
+{  
+	background: #cbcbcb;  
+	width: 6px;  
+	border-radius: 1px;  
+	padding-left:-1px;  
+	padding-right:-1px;  
+	padding-top:2px;  
+	padding-bottom:2px;  
+} 
+
+QSlider::sub-page:vertical 
+{  
+	background: #cbcbcb;  
+	border-radius: 2px;  
+} 
+
+QSlider::add-page:vertical 
+{  
+	background: qlineargradient(x1:0, y1:0, x2:0, y2:1,stop:0 #0EF2D1, stop:1 #0EF2D1);  
+	background: qlineargradient(x1: 0, y1: 0.2, x2: 1, y2: 1,stop: 0 #0EF2D1, stop: 1 #0EF2D1);  
+	width: 10px;  
+	border-radius: 2px;  
+}
+
+QSlider::handle:vertical   
+{     
+    border: 0px ;  
+	border-image: url(:/qrc/qrc/yuan.png);
+    margin: -2px -4px -2px -4px; 
+    height: 14px;
+} 
+#label_num
+{
+	font-family: 微软雅黑;
+	font-size: 12px;
+	color: #000000;
+}</string>
+  </property>
+  <widget class="QLabel" name="label_icon">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>30</width>
+     <height>170</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>30</width>
+     <height>170</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>30</width>
+     <height>170</height>
+    </size>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="CustomSlider" name="Slider">
+   <property name="geometry">
+    <rect>
+     <x>8</x>
+     <y>20</y>
+     <width>14</width>
+     <height>130</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>14</width>
+     <height>130</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>14</width>
+     <height>130</height>
+    </size>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Vertical</enum>
+   </property>
+  </widget>
+  <widget class="QWidget" name="widget_tooltip" native="true">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>100</y>
+     <width>30</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>30</width>
+     <height>20</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>30</width>
+     <height>20</height>
+    </size>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label">
+      <property name="minimumSize">
+       <size>
+        <width>30</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>30</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-image: url(:/qrc/qrc/yinliang_bg.png);</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+   </layout>
+   <widget class="QLabel" name="label_num">
+    <property name="geometry">
+     <rect>
+      <x>7</x>
+      <y>4</y>
+      <width>20</width>
+      <height>12</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>20</width>
+      <height>12</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>20</width>
+      <height>12</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>100</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <zorder>label</zorder>
+   <zorder>label_num</zorder>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CustomSlider</class>
+   <extends>QSlider</extends>
+   <header>customslider.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="vlcPlayer.qrc"/>
+ </resources>
+ <connections/>
+</ui>
