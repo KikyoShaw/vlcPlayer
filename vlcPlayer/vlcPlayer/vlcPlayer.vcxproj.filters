@@ -52,6 +52,9 @@
     <ClCompile Include="vlcPlayerManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="videoList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="videoControls.h">
@@ -66,12 +69,18 @@
     <QtMoc Include="vlcPlayerManager.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="videoList.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="videoControls.ui">
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="vsliderwidget.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="videoList.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

@@ -5,6 +5,8 @@
 
 class vlcPlayerManager;
 class QThread;
+class VideoList;
+class QMovie;
 
 class vlcPlayer : public QWidget
 {
@@ -17,7 +19,11 @@ public:
 private:
 	void initVlcPlayer();
 	void initVideoControls();
+	void initVideoList();
+	void initMain();
+	void initLoadGif();
 	void updateVlcPlayerTime(int sec);
+	void locateWidgets();
 
 private slots:
 	void sltMaxOrNormal();
@@ -28,12 +34,17 @@ private slots:
 	void sltPlayVlcByLocal();
 	void sltVlcMediaPlayerVount(int sec);
 	void sltVlcMediaPlayerTimeChange(int sec);
+	void sltSendPathToVlc(const QString& path);
 
 private:
 	virtual void mouseMoveEvent(QMouseEvent *event);
 	virtual void mousePressEvent(QMouseEvent *event);
 	virtual void mouseReleaseEvent(QMouseEvent *event);
 	virtual void closeEvent(QCloseEvent *event);
+	virtual void showEvent(QShowEvent *event);
+	virtual void moveEvent(QMoveEvent *event);
+	virtual void hideEvent(QHideEvent *event);
+	virtual void resizeEvent(QResizeEvent *event);
 
 private:
     Ui::vlcPlayerClass ui;
@@ -49,4 +60,8 @@ private:
 	int m_volumn;
 	//是否完成播放
 	bool m_isFinishPlay;
+	//播放列表
+	QSharedPointer <VideoList> m_videoList = nullptr;
+	//gif
+	QMovie *m_loadGif = nullptr;
 };

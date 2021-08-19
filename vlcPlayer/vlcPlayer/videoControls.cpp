@@ -87,7 +87,6 @@ void VideoControls::closeWidget()
 	if (m_volumeSlider) {
 		m_volumeSlider->close();
 	}
-	close();
 }
 
 void VideoControls::sltSliderProgressClicked()

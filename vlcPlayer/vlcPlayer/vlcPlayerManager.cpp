@@ -53,10 +53,13 @@ int vlcPlayerManager::Play(QString filename, void* hwnd)
 		qDebug() << "file is not exist:" << filename;
 		return -1;
 	}
+	////组装文件
+	//filename = "file:///" + filename;
 	if (this->IsPlaying())
 		this->Stop();
 	libvlc_media_t *media;
 	media = libvlc_media_new_path(m_pVLC_Inst, filename.toStdString().data());
+	//media = libvlc_media_new_location(m_pVLC_Inst, filename.toStdString().data());
 	if (media){
 		m_pVLC_Player = libvlc_media_player_new_from_media(media);
 		if (m_pVLC_Player){
@@ -65,8 +68,9 @@ int vlcPlayerManager::Play(QString filename, void* hwnd)
 			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerVout, handleEvents, this);
 			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerEndReached, handleEvents, this);
 			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerPositionChanged, handleEvents, this);
-			if (hwnd != nullptr)
+			if (hwnd != nullptr) {
 				libvlc_media_player_set_hwnd(m_pVLC_Player, hwnd);
+			}
 			this->Play();
 		}
 	}
@@ -76,8 +80,8 @@ int vlcPlayerManager::Play(QString filename, void* hwnd)
 int vlcPlayerManager::PlayUrl(QString url, void* hwnd)
 {
 	//if (this->IsPlaying())
-		//this->Stop();
-	Stop();
+	//	this->Stop();
+	this->Stop();
 	libvlc_media_t *media;
 	media = libvlc_media_new_location(m_pVLC_Inst, url.toStdString().data());
 	if (media){
@@ -90,8 +94,8 @@ int vlcPlayerManager::PlayUrl(QString url, void* hwnd)
 			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerPositionChanged, handleEvents, this);
 			if (hwnd != nullptr) {
 				libvlc_media_player_set_hwnd(m_pVLC_Player, hwnd);
-				Play();
 			}
+			this->Play();
 		}
 	}
 	return -1;
@@ -115,8 +119,7 @@ void vlcPlayerManager::RemoveBlack()
 
 int vlcPlayerManager::Play()
 {
-	if (m_pVLC_Player)
-	{
+	if (m_pVLC_Player){
 		return  libvlc_media_player_play(m_pVLC_Player);
 	}
 	return -1;
@@ -131,14 +134,13 @@ void vlcPlayerManager::Pause()
 
 void vlcPlayerManager::Stop()
 {
-	if (m_pVLC_Player){
+	if (m_pVLC_Player) {
 		if (GetPlayState() != libvlc_Ended) {
 			libvlc_media_player_pause(m_pVLC_Player);
 			libvlc_media_player_stop(m_pVLC_Player);
 		}
 		libvlc_media_player_release(m_pVLC_Player);
 		m_pVLC_Player = NULL;
-
 	}
 }
 
@@ -278,6 +280,14 @@ void vlcPlayerManager::PlayEnd()
 	// 播放完成，需要显式调用stop才能正常结束
 	m_isEndPlay = true;
 	emit playCurrentTime(GetTime() / 1000);
+}
+
+void vlcPlayerManager::initInst()
+{
+	const char *vlc_args[] = {
+	"--clock-synchro=0"
+	};
+	m_pVLC_Inst = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
 }
 
 void vlcPlayerManager::setOption(libvlc_media_t *m, const QString &option)

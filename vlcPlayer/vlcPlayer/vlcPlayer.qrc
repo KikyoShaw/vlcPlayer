@@ -9,5 +9,12 @@
         <file>qrc/yyf_ico_yl.png</file>
         <file>qrc/yinliang_bg.png</file>
         <file>qrc/yuan.png</file>
+        <file>qrc/load.gif</file>
+        <file>qrc/main.jpg</file>
+        <file>qrc/ico_zkt.png</file>
+    </qresource>
+    <qresource prefix="/qss">
+        <file>qrc/qss/listWidget.qss</file>
+        <file>qrc/qss/whiteScrollbar.qss</file>
     </qresource>
 </RCC>

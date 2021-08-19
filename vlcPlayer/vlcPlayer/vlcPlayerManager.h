@@ -57,6 +57,9 @@ public:
 	// 播放完成
 	void PlayEnd();
 
+	//解决卡顿问题
+	void initInst();
+
 signals:
 	void loadFinish();
 	void totalTime(int sec);
@@ -64,13 +67,16 @@ signals:
 	void playCurrentTime(int sec);
 
 private:
-	libvlc_instance_t     *m_pVLC_Inst;                      // VLC实例
-	libvlc_media_player_t *m_pVLC_Player;            // VLC播放器
-	libvlc_event_manager_t *m_pVLC_eMg;           //VLC事件
+	//VLC实例
+	libvlc_instance_t     *m_pVLC_Inst;
+	//VLC播放器
+	libvlc_media_player_t *m_pVLC_Player;
+	//VLC事件
+	libvlc_event_manager_t *m_pVLC_eMg;
 
 	// 是否播放完成
 	bool m_isEndPlay = false;
 
-	// 配置属性
+	// 配置属性(全屏)
 	void setOption(libvlc_media_t *m, const QString &option);
 };

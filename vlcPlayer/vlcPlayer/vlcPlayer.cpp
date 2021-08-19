@@ -3,7 +3,9 @@
 #include "videoControls.h"
 #include "vlcPlayerManager.h"
 #include <QThread>
-#include <QFileDialog>
+#include "videoList.h"
+#include <QMovie>
+#include <QDesktopServices>
 
 vlcPlayer::vlcPlayer(QWidget *parent)
     : QWidget(parent), m_bMove(false), m_point(QPoint()), 
@@ -17,6 +19,9 @@ vlcPlayer::vlcPlayer(QWidget *parent)
 
 	initVideoControls();
 	initVlcPlayer();
+	initVideoList();
+	initMain();
+	initLoadGif();
 
 	connect(ui.pushButton_min, &QPushButton::clicked, this, &vlcPlayer::showMinimized);
 	connect(ui.pushButton_close, &QPushButton::clicked, this, &vlcPlayer::close);
@@ -61,6 +66,41 @@ void vlcPlayer::initVideoControls()
 	connect(ui.widget_title_top, &VideoControls::sigSoundVoiceValue, this, &vlcPlayer::sltSoundVoiceValue);
 }
 
+void vlcPlayer::initVideoList()
+{
+	m_videoList = QSharedPointer<VideoList>(new VideoList(this));
+	if (m_videoList) {
+		m_videoList->setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
+		connect(m_videoList.data(), &VideoList::sigSendPathToVlc, this, &vlcPlayer::sltSendPathToVlc);
+	}
+}
+
+void vlcPlayer::initMain()
+{
+	connect(ui.pushButton_return, &QPushButton::clicked, this, [=]() {
+		ui.stackedWidget->setCurrentWidget(ui.page_mian);
+	});
+	auto csdnText = QStringLiteral("CSDN：<a style='text-decoration:none;'href = 'https://blog.csdn.net/qq_36651243'>%1</a>").arg(QStringLiteral("点击进入"));
+	auto githubText = QStringLiteral("GitHub：<a style='text-decoration:none;'href = 'https://github.com/KikyoShaw'>%1</a>").arg(QStringLiteral("点击进入"));
+	ui.label_csdn->setText(csdnText);
+	ui.label_github->setText(githubText);
+	connect(ui.label_csdn, &QLabel::linkActivated, this, [=](const QString & text) {
+		QDesktopServices::openUrl(QUrl(text));
+	});
+	connect(ui.label_github, &QLabel::linkActivated, this, [=](const QString & text) {
+		QDesktopServices::openUrl(QUrl(text));
+	});
+	ui.stackedWidget->setCurrentWidget(ui.page_mian);
+}
+
+void vlcPlayer::initLoadGif()
+{
+	m_loadGif = new QMovie(this);
+	m_loadGif->setFileName(":/qrc/qrc/load.gif");
+	ui.label_loading->setMovie(m_loadGif);
+	m_loadGif->start();
+}
+
 void vlcPlayer::updateVlcPlayerTime(int sec)
 {
 	QString currentMin = sec / 60 < 10 ? QString("0%1").arg(sec / 60) : QString::number(sec / 60);
@@ -73,6 +113,19 @@ void vlcPlayer::updateVlcPlayerTime(int sec)
 	if (sec == m_totalTime) {
 		m_isFinishPlay = true;
 		ui.widget_title_top->setPlaying(false);
+	}
+}
+
+void vlcPlayer::locateWidgets()
+{
+	ui.widget_title_top->locateWidgets();
+	if (m_videoList) {
+		int pWidth = 200;
+		int pHeight = ui.widget_player->height();
+		int posX = ui.widget_player->width() - pWidth + 11;
+		int posY = ui.widget_top->height() + 7;
+		m_videoList->resize(pWidth, pHeight);
+		m_videoList->move(mapToGlobal(QPoint(posX, posY)));
 	}
 }
 
@@ -109,6 +162,7 @@ void vlcPlayer::sltPlayVlcByLink()
 	auto linkUrl = ui.lineEdit_search->text();
 	if (!linkUrl.isEmpty()) {
 		if (m_vlcPlayer) {
+			ui.stackedWidget->setCurrentWidget(ui.page_loading);
 			m_vlcPlayer->PlayUrl(linkUrl, (void*)ui.widget_player->winId());
 		}
 	}
@@ -116,16 +170,9 @@ void vlcPlayer::sltPlayVlcByLink()
 
 void vlcPlayer::sltPlayVlcByLocal()
 {
-	auto fileList = QFileDialog::getOpenFileNames(this,
-		QStringLiteral("选择媒体文件"),
-		".",
-		QStringLiteral("媒体文件(*.avi *.mp4 *.flv *.mkv*.mp3 *.wav *.wma);"));
-
-	if (fileList.isEmpty()) return;
-	//播放第一个
-	auto filePath = fileList.takeFirst();
-	if (m_vlcPlayer) {
-		m_vlcPlayer->PlayUrl(filePath, (void*)ui.widget_player->winId());
+	if (m_videoList) {
+		auto isVisible = m_videoList->isVisible();
+		m_videoList->setVisible(!isVisible);
 	}
 }
 
@@ -136,6 +183,7 @@ void vlcPlayer::sltVlcMediaPlayerVount(int sec)
 		m_totalTime = m_vlcPlayer->GetTime() / 1000;
 		ui.widget_title_top->setProgressDuration(m_totalTime);
 		updateVlcPlayerTime(0);
+		ui.stackedWidget->setCurrentWidget(ui.page_player);
 	}
 	if (!m_isFinishPlay) {
 		ui.widget_title_top->setPlaying(true);
@@ -145,6 +193,13 @@ void vlcPlayer::sltVlcMediaPlayerVount(int sec)
 void vlcPlayer::sltVlcMediaPlayerTimeChange(int sec)
 {
 	updateVlcPlayerTime(sec);
+}
+
+void vlcPlayer::sltSendPathToVlc(const QString & path)
+{
+	if (m_vlcPlayer) {
+		m_vlcPlayer->Play(path, (void*)ui.widget_player->winId());
+	}
 }
 
 void vlcPlayer::sltMaxOrNormal()
@@ -170,9 +225,11 @@ void vlcPlayer::mousePressEvent(QMouseEvent * event)
 	//鼠标事件中包含“按住的是左键”
 	if ((event->button() == Qt::LeftButton) && (event->pos().y() < 56) && (event->pos().y() > 0))
 	{
-		m_bMove = true;
-		//获取移动的位移量
-		m_point = event->globalPos() - frameGeometry().topLeft();
+		if (!isMaximized()) {
+			m_bMove = true;
+			//获取移动的位移量
+			m_point = event->globalPos() - frameGeometry().topLeft();
+		}
 	}
 	QWidget::mousePressEvent(event);
 }
@@ -189,4 +246,28 @@ void vlcPlayer::closeEvent(QCloseEvent * event)
 		m_vlcPlayer->Stop();
 	}
 	QWidget::closeEvent(event);
+}
+
+void vlcPlayer::showEvent(QShowEvent * event)
+{
+	QWidget::showEvent(event);
+	locateWidgets();
+}
+
+void vlcPlayer::moveEvent(QMoveEvent * event)
+{
+	QWidget::moveEvent(event);
+	locateWidgets();
+}
+
+void vlcPlayer::hideEvent(QHideEvent * event)
+{
+	ui.widget_title_top->closeWidget();
+	QWidget::hideEvent(event);
+}
+
+void vlcPlayer::resizeEvent(QResizeEvent * event)
+{
+	QWidget::resizeEvent(event);
+	locateWidgets();
 }

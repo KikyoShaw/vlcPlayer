@@ -105,10 +105,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="videoList.cpp" />
     <ClCompile Include="vlcPlayerManager.cpp" />
     <ClCompile Include="vsliderwidget.cpp" />
     <QtRcc Include="vlcPlayer.qrc" />
     <QtUic Include="videoControls.ui" />
+    <QtUic Include="videoList.ui" />
     <QtUic Include="vlcPlayer.ui" />
     <QtMoc Include="vlcPlayer.h" />
     <ClCompile Include="customslider.cpp" />
@@ -128,6 +130,9 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="vlcPlayerManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="videoList.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
