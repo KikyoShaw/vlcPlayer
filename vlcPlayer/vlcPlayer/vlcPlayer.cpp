@@ -10,7 +10,7 @@
 
 vlcPlayer::vlcPlayer(QWidget *parent)
     : QWidget(parent), m_bMove(false), m_point(QPoint()), 
-	m_totalTime(QString()), m_volumn(50), m_isFinishPlay(false)
+	m_totalTime(QString()), m_volumn(100), m_isFinishPlay(false)
 {
     ui.setupUi(this);
 	setWindowFlags(Qt::FramelessWindowHint | Qt::WindowSystemMenuHint | Qt::WindowMinimizeButtonHint);
