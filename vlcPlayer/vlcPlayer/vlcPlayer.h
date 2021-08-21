@@ -22,7 +22,6 @@ private:
 	void initVideoList();
 	void initMain();
 	void initLoadGif();
-	void updateVlcPlayerTime(int sec);
 	void locateWidgets();
 
 private slots:
@@ -32,8 +31,8 @@ private slots:
 	void sltSetPosition(int value);
 	void sltPlayVlcByLink();
 	void sltPlayVlcByLocal();
-	void sltVlcMediaPlayerVount(int sec);
-	void sltVlcMediaPlayerTimeChange(int sec);
+	void sltVlcMediaPlayerVount(int duration);
+	void sltVlcMediaPlayerTimeChange(int position);
 	void sltSendPathToVlc(const QString& path);
 
 private:
@@ -55,7 +54,7 @@ private:
 	//播放器线程
 	QThread *m_thread = nullptr;
 	//记录媒体文件总时长
-	int m_totalTime;
+	QString m_totalTime;
 	//媒体文件初始播放音量
 	int m_volumn;
 	//是否完成播放

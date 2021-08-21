@@ -62,9 +62,8 @@ public:
 
 signals:
 	void loadFinish();
-	void totalTime(int sec);
-	void playAllTime(int sec);
-	void playCurrentTime(int sec);
+	void playToralTime(int duration);
+	void playCurrentTime(int position);
 
 private:
 	//VLCÊµÀý

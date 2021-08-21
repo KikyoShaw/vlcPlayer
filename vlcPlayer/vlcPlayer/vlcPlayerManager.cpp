@@ -10,13 +10,14 @@ static void handleEvents(const libvlc_event_t *event, void *userData)
 	switch (event->type) {
 	// 加载完成
 	case libvlc_MediaPlayerVout:{
-		emit obj->playAllTime(obj->GetTime() / 1000);
+		auto duration = obj->GetTime() / 1000;
+		emit obj->playToralTime(duration);
 		break;
 	}
 	// media player 位置改变
 	case libvlc_MediaPlayerPositionChanged: {
-		int time = obj->GetPlayTime();
-		emit obj->playCurrentTime(time / 1000);
+		int position = obj->GetPlayTime() / 1000;
+		emit obj->playCurrentTime(position);
 		break;
 	}
 	// 播放完成

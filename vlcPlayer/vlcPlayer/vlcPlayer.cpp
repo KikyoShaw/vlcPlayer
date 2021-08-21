@@ -5,11 +5,12 @@
 #include <QThread>
 #include "videoList.h"
 #include <QMovie>
+#include <QTime>
 #include <QDesktopServices>
 
 vlcPlayer::vlcPlayer(QWidget *parent)
     : QWidget(parent), m_bMove(false), m_point(QPoint()), 
-	m_totalTime(0), m_volumn(50), m_isFinishPlay(false)
+	m_totalTime(QString()), m_volumn(50), m_isFinishPlay(false)
 {
     ui.setupUi(this);
 	setWindowFlags(Qt::FramelessWindowHint | Qt::WindowSystemMenuHint | Qt::WindowMinimizeButtonHint);
@@ -52,8 +53,10 @@ void vlcPlayer::initVlcPlayer()
 		}
 		//初始化vlc
 		m_vlcPlayer->initVlc();
+		//初始化音量
+		m_vlcPlayer->SetVolume(m_volumn);
 		//连接信号与槽
-		connect(m_vlcPlayer, &vlcPlayerManager::playAllTime, this, &vlcPlayer::sltVlcMediaPlayerVount);
+		connect(m_vlcPlayer, &vlcPlayerManager::playToralTime, this, &vlcPlayer::sltVlcMediaPlayerVount);
 		connect(m_vlcPlayer, &vlcPlayerManager::playCurrentTime, this, &vlcPlayer::sltVlcMediaPlayerTimeChange);
 	}
 }
@@ -78,7 +81,15 @@ void vlcPlayer::initVideoList()
 void vlcPlayer::initMain()
 {
 	connect(ui.pushButton_return, &QPushButton::clicked, this, [=]() {
-		ui.stackedWidget->setCurrentWidget(ui.page_mian);
+		if (!ui.page_mian->isVisible()) {
+			ui.stackedWidget->setCurrentWidget(ui.page_mian);
+		}
+		else {
+			auto state = m_vlcPlayer->GetPlayState();
+			if (libvlc_Playing == state || libvlc_Paused == state) {
+				ui.stackedWidget->setCurrentWidget(ui.page_player);
+			}
+		}
 	});
 	auto csdnText = QStringLiteral("CSDN：<a style='text-decoration:none;'href = 'https://blog.csdn.net/qq_36651243'>%1</a>").arg(QStringLiteral("点击进入"));
 	auto githubText = QStringLiteral("GitHub：<a style='text-decoration:none;'href = 'https://github.com/KikyoShaw'>%1</a>").arg(QStringLiteral("点击进入"));
@@ -101,28 +112,13 @@ void vlcPlayer::initLoadGif()
 	m_loadGif->start();
 }
 
-void vlcPlayer::updateVlcPlayerTime(int sec)
-{
-	QString currentMin = sec / 60 < 10 ? QString("0%1").arg(sec / 60) : QString::number(sec / 60);
-	QString currentSecond = sec % 60 < 10 ? QString("0%1").arg(sec % 60) : QString::number(sec % 60);
-	QString totalMin = m_totalTime / 60 < 10 ? QString("0%1").arg(m_totalTime / 60) : QString::number(m_totalTime / 60);
-	QString totalSecond = m_totalTime % 60 < 10 ? QString("0%1").arg(m_totalTime % 60) : QString::number(m_totalTime % 60);
-	ui.widget_title_top->setProgressText(QString("%1:%2/%3:%4").arg(currentMin).arg(currentSecond).arg(totalMin).arg(totalSecond));
-	// 刷新进度条
-	ui.widget_title_top->setSliderPosition(sec);
-	if (sec == m_totalTime) {
-		m_isFinishPlay = true;
-		ui.widget_title_top->setPlaying(false);
-	}
-}
-
 void vlcPlayer::locateWidgets()
 {
 	ui.widget_title_top->locateWidgets();
 	if (m_videoList) {
 		int pWidth = 200;
-		int pHeight = ui.widget_player->height();
-		int posX = ui.widget_player->width() - pWidth + 11;
+		int pHeight = ui.stackedWidget->height();
+		int posX = ui.stackedWidget->width() - pWidth + 11;
 		int posY = ui.widget_top->height() + 7;
 		m_videoList->resize(pWidth, pHeight);
 		m_videoList->move(mapToGlobal(QPoint(posX, posY)));
@@ -176,13 +172,18 @@ void vlcPlayer::sltPlayVlcByLocal()
 	}
 }
 
-void vlcPlayer::sltVlcMediaPlayerVount(int sec)
+void vlcPlayer::sltVlcMediaPlayerVount(int duration)
 {
 	if (m_vlcPlayer) {
+		ui.widget_title_top->setProgressDuration(duration);
 		// 保存视频的总长度
-		m_totalTime = m_vlcPlayer->GetTime() / 1000;
-		ui.widget_title_top->setProgressDuration(m_totalTime);
-		updateVlcPlayerTime(0);
+		duration = duration * 1000;
+		auto hh = duration / 3600000;
+		auto mm = (duration % 3600000) / 60000.0;
+		auto ss = (duration % 60000) / 1000.0;
+		QTime allTime(hh, mm, ss);
+		m_totalTime = allTime.toString(tr("hh:mm:ss"));
+		sltVlcMediaPlayerTimeChange(0);
 		ui.stackedWidget->setCurrentWidget(ui.page_player);
 	}
 	if (!m_isFinishPlay) {
@@ -190,9 +191,22 @@ void vlcPlayer::sltVlcMediaPlayerVount(int sec)
 	}
 }
 
-void vlcPlayer::sltVlcMediaPlayerTimeChange(int sec)
+void vlcPlayer::sltVlcMediaPlayerTimeChange(int position)
 {
-	updateVlcPlayerTime(sec);
+	// 刷新进度条
+	ui.widget_title_top->setSliderPosition(position);
+	position = position * 1000;
+	auto hh = position / 3600000;
+	auto mm = (position % 3600000) / 60000.0;
+	auto ss = (position % 60000) / 1000.0;
+	QTime duration(hh, mm, ss);
+	auto localTime = duration.toString(tr("hh:mm:ss"));
+	auto text = QString("%1/%2").arg(localTime).arg(m_totalTime);
+	ui.widget_title_top->setProgressText(text);
+	if (localTime == m_totalTime) {
+		m_isFinishPlay = true;
+		ui.widget_title_top->setPlaying(false);
+	}
 }
 
 void vlcPlayer::sltSendPathToVlc(const QString & path)
