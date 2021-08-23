@@ -44,6 +44,7 @@ private:
 	virtual void moveEvent(QMoveEvent *event);
 	virtual void hideEvent(QHideEvent *event);
 	virtual void resizeEvent(QResizeEvent *event);
+	virtual void keyReleaseEvent(QKeyEvent *event);
 
 private:
     Ui::vlcPlayerClass ui;
@@ -63,4 +64,6 @@ private:
 	QSharedPointer <VideoList> m_videoList = nullptr;
 	//gif
 	QMovie *m_loadGif = nullptr;
+	//²¥·Å½ø¶È
+	int m_position;
 };

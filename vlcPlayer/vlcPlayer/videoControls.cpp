@@ -103,12 +103,12 @@ void VideoControls::sltSliderProgressReleased()
 
 void VideoControls::sltSoundVoiceValue(int value)
 {
-	//if (0 == value) {
-	//	ui.pushButton_volum->setStyleSheet("border-image: url(:/jingyin.png);");
-	//}
-	//else {
-	//	ui.pushButton_volum->setStyleSheet("border-image: url(:/shengyin.png);");
-	//}
+	if (0 == value) {
+		ui.pushButton_volum->setStyleSheet("border-image: url(:/qrc/qrc/yyf_ico_yl_gb.png);");
+	}
+	else {
+		ui.pushButton_volum->setStyleSheet("border-image: url(:/qrc/qrc/yyf_ico_yl.png);");
+	}
 	emit sigSoundVoiceValue(value);
 }
 

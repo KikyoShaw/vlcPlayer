@@ -10,7 +10,8 @@
 
 vlcPlayer::vlcPlayer(QWidget *parent)
     : QWidget(parent), m_bMove(false), m_point(QPoint()), 
-	m_totalTime(QString()), m_volumn(100), m_isFinishPlay(false)
+	m_totalTime(QString()), m_volumn(100), m_isFinishPlay(false),
+	m_position(0)
 {
     ui.setupUi(this);
 	setWindowFlags(Qt::FramelessWindowHint | Qt::WindowSystemMenuHint | Qt::WindowMinimizeButtonHint);
@@ -194,19 +195,22 @@ void vlcPlayer::sltVlcMediaPlayerVount(int duration)
 void vlcPlayer::sltVlcMediaPlayerTimeChange(int position)
 {
 	// 刷新进度条
-	ui.widget_title_top->setSliderPosition(position);
-	position = position * 1000;
-	auto hh = position / 3600000;
-	auto mm = (position % 3600000) / 60000.0;
-	auto ss = (position % 60000) / 1000.0;
-	QTime duration(hh, mm, ss);
-	auto localTime = duration.toString(tr("hh:mm:ss"));
-	auto text = QString("%1/%2").arg(localTime).arg(m_totalTime);
-	ui.widget_title_top->setProgressText(text);
-	if (localTime == m_totalTime) {
-		m_isFinishPlay = true;
-		ui.widget_title_top->setPlaying(false);
-	}
+	//if (m_position != position) {
+		m_position = position;
+		ui.widget_title_top->setSliderPosition(position);
+		position = position * 1000;
+		auto hh = position / 3600000;
+		auto mm = (position % 3600000) / 60000.0;
+		auto ss = (position % 60000) / 1000.0;
+		QTime duration(hh, mm, ss);
+		auto localTime = duration.toString(tr("hh:mm:ss"));
+		auto text = QString("%1/%2").arg(localTime).arg(m_totalTime);
+		ui.widget_title_top->setProgressText(text);
+		if (localTime == m_totalTime) {
+			m_isFinishPlay = true;
+			ui.widget_title_top->setPlaying(false);
+		}
+	/*}*/
 }
 
 void vlcPlayer::sltSendPathToVlc(const QString & path)
@@ -284,4 +288,56 @@ void vlcPlayer::resizeEvent(QResizeEvent * event)
 {
 	QWidget::resizeEvent(event);
 	locateWidgets();
+}
+
+//上下调节音量，间隔为5; 左右快退快进，间隔为15s
+void vlcPlayer::keyReleaseEvent(QKeyEvent *event)
+{
+	auto key = event->key();
+	switch (key)
+	{
+	case Qt::Key_Left: {
+		if (m_vlcPlayer) {
+			if (!m_isFinishPlay) {
+				m_position = m_position - 15;
+				m_vlcPlayer->SetPlayTime(m_position * 1000);
+			}
+		}
+		break;
+	}
+	case Qt::Key_Right: {
+		if (m_vlcPlayer) {
+			if (!m_isFinishPlay) {
+				m_position = m_position + 15;
+				m_vlcPlayer->SetPlayTime(m_position * 1000);
+			}
+		}
+		break;
+	}
+	case Qt::Key_Up: {
+		if (m_vlcPlayer) {
+			if (!m_isFinishPlay) {
+				m_volumn = m_volumn + 5;
+				//最大不超过200
+				m_volumn = qMin(m_volumn, 200);
+				ui.widget_title_top->setVoiceValue(m_volumn);
+			}
+		}
+		break;
+	}
+	case Qt::Key_Down: {
+		if (m_vlcPlayer) {
+			if (!m_isFinishPlay) {
+				m_volumn = m_volumn - 5;
+				//最小不小过0
+				m_volumn = qMax(m_volumn, 0);
+				ui.widget_title_top->setVoiceValue(m_volumn);
+			}
+		}
+		break;
+	}
+	default:
+		break;
+	}
+	QWidget::keyReleaseEvent(event);
 }

@@ -12,7 +12,7 @@ VSliderWidget::VSliderWidget(QWidget *parent)
 	this->installEventFilter(this);
 
 	ui.widget_tooltip->hide();
-	ui.Slider->setMaximum(100);
+	ui.Slider->setMaximum(200);
 	this->resize(32, 170);
 
 	connect(ui.Slider, &CustomSlider::costomSliderClicked, this, [=]() {

@@ -11,6 +11,7 @@
         <file>qrc/yuan.png</file>
         <file>qrc/load.gif</file>
         <file>qrc/ico_zkt.png</file>
+        <file>qrc/yyf_ico_yl_gb.png</file>
     </qresource>
     <qresource prefix="/qss">
         <file>qrc/qss/listWidget.qss</file>
