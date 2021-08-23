@@ -144,6 +144,35 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="pushButton_rate">
+        <property name="minimumSize">
+         <size>
+          <width>36</width>
+          <height>26</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>36</width>
+          <height>26</height>
+         </size>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background: rgba(255,255,255,0.1);
+border-radius: 10px;
+font-size: 12px;
+font-family: 微软雅黑;
+color: #FFFFFF;</string>
+        </property>
+        <property name="text">
+         <string>x1.0</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>

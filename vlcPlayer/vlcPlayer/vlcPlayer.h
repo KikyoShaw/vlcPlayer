@@ -34,6 +34,7 @@ private slots:
 	void sltVlcMediaPlayerVount(int duration);
 	void sltVlcMediaPlayerTimeChange(int position);
 	void sltSendPathToVlc(const QString& path);
+	void sltSetRate(float rate);
 
 private:
 	virtual void mouseMoveEvent(QMouseEvent *event);

@@ -68,6 +68,7 @@ void vlcPlayer::initVideoControls()
 	connect(ui.widget_title_top, &VideoControls::sigVideoPlayOrPause, this, &vlcPlayer::sltVideoPlayOrPause);
 	connect(ui.widget_title_top, &VideoControls::sigSetPosition, this, &vlcPlayer::sltSetPosition);
 	connect(ui.widget_title_top, &VideoControls::sigSoundVoiceValue, this, &vlcPlayer::sltSoundVoiceValue);
+	connect(ui.widget_title_top, &VideoControls::sigSetRate, this, &vlcPlayer::sltSetRate);
 }
 
 void vlcPlayer::initVideoList()
@@ -217,6 +218,13 @@ void vlcPlayer::sltSendPathToVlc(const QString & path)
 {
 	if (m_vlcPlayer) {
 		m_vlcPlayer->Play(path, (void*)ui.widget_player->winId());
+	}
+}
+
+void vlcPlayer::sltSetRate(float rate)
+{
+	if (m_vlcPlayer) {
+		m_vlcPlayer->setRate(rate);
 	}
 }
 

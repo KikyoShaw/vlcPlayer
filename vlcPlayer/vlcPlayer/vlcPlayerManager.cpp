@@ -262,6 +262,13 @@ bool vlcPlayerManager::setTrack(int trackIndex)
 	return false;
 }
 
+void vlcPlayerManager::setRate(float rate)
+{
+	if (m_pVLC_Player) {
+		libvlc_media_player_set_rate(m_pVLC_Player, rate);
+	}
+}
+
 void vlcPlayerManager::Release()
 {
 	if (m_pVLC_Player){

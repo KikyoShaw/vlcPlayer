@@ -1,6 +1,8 @@
 #include "videoControls.h"
 #include "vsliderwidget.h"
 
+constexpr char* Property_Rate = "RateValue";
+
 VideoControls::VideoControls(QWidget *parent)
 	:QWidget(parent)
 {
@@ -17,7 +19,9 @@ VideoControls::VideoControls(QWidget *parent)
 	//½ø¶È
 	connect(ui.slider_progress, &CustomSlider::costomSliderClicked, this, &VideoControls::sltSliderProgressClicked);
 	connect(ui.slider_progress, &CustomSlider::sliderReleased, this, &VideoControls::sltSliderProgressReleased);
-
+	//±¶ËÙ
+	ui.pushButton_rate->setProperty(Property_Rate, 1.0);
+	connect(ui.pushButton_rate, &QPushButton::clicked, this, &VideoControls::sltSetVideoRate);
 }
 
 VideoControls::~VideoControls()
@@ -119,6 +123,29 @@ void VideoControls::sltVolumControls()
 		auto isVisible = m_volumeSlider->isVisible();
 		m_volumeSlider->setVisible(!isVisible);
 	}
+}
+
+void VideoControls::sltSetVideoRate()
+{
+	auto rate = ui.pushButton_rate->property(Property_Rate).toFloat();
+	if (1.0 == rate) {
+		rate = 1.5;
+	}
+	else if (1.5 == rate) {
+		rate = 2.0;
+	}
+	else if (2.0 == rate) {
+		rate = 3.0;
+	}
+	else if (3.0 == rate) {
+		rate = 0.5;
+	}
+	else if (0.5 == rate) {
+		rate = 1.0;
+	}
+	ui.pushButton_rate->setProperty(Property_Rate, rate);
+	ui.pushButton_rate->setText(QString("x%1").arg(rate));
+	emit sigSetRate(rate);
 }
 
 void VideoControls::sltVideoPlayOrPause()

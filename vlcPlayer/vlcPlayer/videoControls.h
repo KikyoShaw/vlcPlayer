@@ -37,11 +37,13 @@ private slots:
 	void sltSliderProgressReleased();
 	void sltSoundVoiceValue(int value);
 	void sltVolumControls();
+	void sltSetVideoRate();
 
 signals:
 	void sigVideoPlayOrPause(bool state);
 	void sigSetPosition(int value);
 	void sigSoundVoiceValue(int value);
+	void sigSetRate(float rate);
 
 private:
 	Ui::controls ui;

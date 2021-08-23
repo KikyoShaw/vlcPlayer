@@ -52,6 +52,8 @@ public:
 	int GetPlayState();
 	//设置音轨
 	bool setTrack(int trackIndex);
+	//设置倍速
+	void setRate(float rate);
 	//销毁
 	void Release();
 	// 播放完成
