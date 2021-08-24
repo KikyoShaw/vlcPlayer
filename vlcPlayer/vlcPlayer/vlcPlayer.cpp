@@ -49,7 +49,7 @@ void vlcPlayer::initVlcPlayer()
 	if (m_vlcPlayer) {
 		m_thread = new QThread(this);
 		if (m_thread) {
-			m_thread->moveToThread(m_thread);
+			m_vlcPlayer->moveToThread(m_thread);
 			m_thread->start();
 		}
 		//³õÊ¼»¯vlc
@@ -118,9 +118,9 @@ void vlcPlayer::locateWidgets()
 {
 	ui.widget_title_top->locateWidgets();
 	if (m_videoList) {
-		int pWidth = 200;
+		int pWidth = ui.stackedWidget->width();
 		int pHeight = ui.stackedWidget->height();
-		int posX = ui.stackedWidget->width() - pWidth + 11;
+		int posX = 10;
 		int posY = ui.widget_top->height() + 7;
 		m_videoList->resize(pWidth, pHeight);
 		m_videoList->move(mapToGlobal(QPoint(posX, posY)));
@@ -216,6 +216,9 @@ void vlcPlayer::sltVlcMediaPlayerTimeChange(int position)
 
 void vlcPlayer::sltSendPathToVlc(const QString & path)
 {
+	if (m_videoList) {
+		m_videoList->setVisible(false);
+	}
 	if (m_vlcPlayer) {
 		m_vlcPlayer->Play(path, (void*)ui.widget_player->winId());
 	}
