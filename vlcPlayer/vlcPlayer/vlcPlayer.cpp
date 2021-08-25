@@ -79,6 +79,7 @@ void vlcPlayer::initVideoList()
 		m_videoList->setWindowFlags(Qt::FramelessWindowHint | Qt::Tool); 
 		connect(m_videoList.data(), &VideoList::sigSendPathToVlc, this, &vlcPlayer::sltSendPathToVlc);
 		connect(m_videoList.data(), &VideoList::sigSendIndexToVlc, this, &vlcPlayer::sltSendIndexToVlc);
+		connect(m_videoList.data(), &VideoList::sigListModel, this, &vlcPlayer::sltSetListPlayModel);
 		connect(m_videoList.data(), &VideoList::sigSendPathListToVlc, this, [=](const QStringList &videoList) {
 			m_vlcList = videoList;
 			if (m_vlcPlayer) {
@@ -213,6 +214,7 @@ void vlcPlayer::sltVlcMediaPlayerVountAudio(int duration)
 		QTime allTime(hh, mm, ss);
 		m_totalTime = allTime.toString(tr("hh:mm:ss"));
 		sltVlcMediaPlayerTimeChange(0);
+		ui.stackedWidget->setCurrentWidget(ui.page_mian);
 	}
 	if (!m_isFinishPlay) {
 		ui.widget_title_top->setPlaying(true);
@@ -267,6 +269,13 @@ void vlcPlayer::sltSetRate(float rate)
 {
 	if (m_vlcPlayer) {
 		m_vlcPlayer->setRate(rate);
+	}
+}
+
+void vlcPlayer::sltSetListPlayModel(int id)
+{
+	if (m_vlcPlayer) {
+		m_vlcPlayer->setListPlayModel(id);
 	}
 }
 

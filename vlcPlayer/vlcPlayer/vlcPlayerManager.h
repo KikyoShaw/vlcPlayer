@@ -73,6 +73,9 @@ public:
 	// 播放完成
 	void PlayEnd();
 
+	//设置列表播放模式
+	void setListPlayModel(int state);
+
 	//解决卡顿问题
 	void initInst();
 
@@ -84,13 +87,13 @@ signals:
 
 private:
 	//VLC实例
-	libvlc_instance_t     *m_pVLC_Inst;
+	libvlc_instance_t     *m_pVLC_Inst = nullptr;
 	//VLC播放器
-	libvlc_media_player_t *m_pVLC_Player;
+	libvlc_media_player_t *m_pVLC_Player = nullptr;
 	//VLC播放列表
-	libvlc_media_list_player_t *m_pVLC_PlayerList;
+	libvlc_media_list_player_t *m_pVLC_PlayerList = nullptr;
 	//VLC事件
-	libvlc_event_manager_t *m_pVLC_eMg;
+	libvlc_event_manager_t *m_pVLC_eMg = nullptr;
 
 	// 是否播放完成
 	bool m_isEndPlay = false;

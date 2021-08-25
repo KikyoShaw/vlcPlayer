@@ -3,6 +3,8 @@
 #include <QButtonGroup>
 #include <QScrollBar>
 
+constexpr char* Property_ListModel = "ListModel";
+
 VideoList::VideoList(QWidget *parent)
 	:QWidget(parent)
 {
@@ -29,6 +31,10 @@ VideoList::VideoList(QWidget *parent)
 
 	//列表点击事件
 	connect(ui.listWidget_localList, &QListWidget::itemDoubleClicked, this, &VideoList::sltListWidgetDoubleClicked);
+
+	//播放模式
+	ui.pushButton_x->setProperty(Property_ListModel, 1);
+	connect(ui.pushButton_x, &QPushButton::clicked, this, &VideoList::sltSetListPlayModel);
 }
 
 VideoList::~VideoList()
@@ -51,6 +57,27 @@ void VideoList::sltListWidgetDoubleClicked(QListWidgetItem * item)
 		emit sigSendPathToVlc(fileName);
 	}
 
+}
+
+void VideoList::sltSetListPlayModel()
+{
+	auto id = ui.pushButton_x->property(Property_ListModel).toInt();
+	auto text = ui.pushButton_x->text();
+	if (0 == id) {
+		id = 1;
+		text = QStringLiteral("列表循环");
+	}
+	else if (1 == id) {
+		id = 2;
+		text = QStringLiteral("单曲循环");
+	}
+	else if (2 == id) {
+		id = 0;
+		text = QStringLiteral("随机播放");
+	}
+	ui.pushButton_x->setProperty(Property_ListModel, id);
+	ui.pushButton_x->setText(text);
+	emit sigListModel(id);
 }
 
 void VideoList::sltLoadMiedaList()

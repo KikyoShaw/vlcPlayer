@@ -15,11 +15,13 @@ private:
 private slots:
 	void sltLoadMiedaList();
 	void sltListWidgetDoubleClicked(QListWidgetItem * item);
+	void sltSetListPlayModel();
 
 signals:
 	void sigSendIndexToVlc(int index);
 	void sigSendPathToVlc(const QString& fileName);
 	void sigSendPathListToVlc(const QStringList& videoList);
+	void sigListModel(int id);
 
 private:
 	Ui::mediaList ui;

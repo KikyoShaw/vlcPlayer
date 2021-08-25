@@ -58,6 +58,9 @@ void vlcPlayerManager::initVlc()
 
 void vlcPlayerManager::addPlayList(const QStringList& pathList, void * hwnd)
 {
+	if (this->IsListPlaying()) {
+		StopPlayList();
+	}
 	libvlc_media_list_t *mediaList;
 	mediaList = libvlc_media_list_new(m_pVLC_Inst);
 	for (auto &each : pathList) {
@@ -90,9 +93,8 @@ void vlcPlayerManager::addPlayList(const QStringList& pathList, void * hwnd)
 
 void vlcPlayerManager::PlayList(const QString& filename)
 {
-	if (this->IsListPlaying()) {
-		StopPlayList();
-	}
+	if (this->IsPlaying())
+		this->Stop();
 	//播放
 	if (m_pVLC_PlayerList) {
 		//播放指定文件
@@ -109,9 +111,8 @@ void vlcPlayerManager::PlayList(const QString& filename)
 
 void vlcPlayerManager::PlayList(int index)
 {
-	if (this->IsListPlaying()) {
-		StopPlayList();
-	}
+	if (this->IsPlaying())
+		this->Stop();
 	//播放
 	if (m_pVLC_PlayerList) {
 		//播放指定文件
@@ -241,14 +242,14 @@ void vlcPlayerManager::StopPlayList()
 		m_pVLC_Player = NULL;
 	}
 
-	/*if (m_pVLC_PlayerList) {
+	if (m_pVLC_PlayerList) {
 		if (GetPlayListState() != libvlc_Ended) {
 			libvlc_media_list_player_pause(m_pVLC_PlayerList);
 			libvlc_media_list_player_stop(m_pVLC_PlayerList);
 		}
 		libvlc_media_list_player_release(m_pVLC_PlayerList);
 		m_pVLC_PlayerList = NULL;
-	}*/
+	}
 }
 
 void vlcPlayerManager::SetVolume(int nVol)
@@ -409,6 +410,21 @@ void vlcPlayerManager::PlayEnd()
 	// 播放完成，需要显式调用stop才能正常结束
 	m_isEndPlay = true;
 	emit playCurrentTime(GetTime() / 1000);
+}
+
+void vlcPlayerManager::setListPlayModel(int state)
+{
+	if (m_pVLC_PlayerList) {
+		if (0 == state) {
+			libvlc_media_list_player_set_playback_mode(m_pVLC_PlayerList, libvlc_playback_mode_default);
+		}
+		else if (1 == state) {
+			libvlc_media_list_player_set_playback_mode(m_pVLC_PlayerList, libvlc_playback_mode_loop);
+		}
+		else if (2 == state) {
+			libvlc_media_list_player_set_playback_mode(m_pVLC_PlayerList, libvlc_playback_mode_repeat);
+		}
+	}
 }
 
 void vlcPlayerManager::initInst()
