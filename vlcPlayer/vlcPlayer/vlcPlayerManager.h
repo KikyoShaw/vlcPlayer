@@ -64,6 +64,7 @@ public:
 
 signals:
 	void loadFinish();
+	void playToralTimeAudio(int duration);
 	void playToralTime(int duration);
 	void playCurrentTime(int position);
 

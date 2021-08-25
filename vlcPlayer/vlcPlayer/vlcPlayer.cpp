@@ -59,6 +59,7 @@ void vlcPlayer::initVlcPlayer()
 		//连接信号与槽
 		connect(m_vlcPlayer, &vlcPlayerManager::playToralTime, this, &vlcPlayer::sltVlcMediaPlayerVount);
 		connect(m_vlcPlayer, &vlcPlayerManager::playCurrentTime, this, &vlcPlayer::sltVlcMediaPlayerTimeChange);
+		connect(m_vlcPlayer, &vlcPlayerManager::playToralTimeAudio, this, &vlcPlayer::sltVlcMediaPlayerVountAudio);
 	}
 }
 
@@ -187,6 +188,24 @@ void vlcPlayer::sltVlcMediaPlayerVount(int duration)
 		m_totalTime = allTime.toString(tr("hh:mm:ss"));
 		sltVlcMediaPlayerTimeChange(0);
 		ui.stackedWidget->setCurrentWidget(ui.page_player);
+	}
+	if (!m_isFinishPlay) {
+		ui.widget_title_top->setPlaying(true);
+	}
+}
+
+void vlcPlayer::sltVlcMediaPlayerVountAudio(int duration)
+{
+	if (m_vlcPlayer) {
+		ui.widget_title_top->setProgressDuration(duration);
+		// 保存视频的总长度
+		duration = duration * 1000;
+		auto hh = duration / 3600000;
+		auto mm = (duration % 3600000) / 60000.0;
+		auto ss = (duration % 60000) / 1000.0;
+		QTime allTime(hh, mm, ss);
+		m_totalTime = allTime.toString(tr("hh:mm:ss"));
+		sltVlcMediaPlayerTimeChange(0);
 	}
 	if (!m_isFinishPlay) {
 		ui.widget_title_top->setPlaying(true);

@@ -32,6 +32,7 @@ private slots:
 	void sltPlayVlcByLink();
 	void sltPlayVlcByLocal();
 	void sltVlcMediaPlayerVount(int duration);
+	void sltVlcMediaPlayerVountAudio(int duration);
 	void sltVlcMediaPlayerTimeChange(int position);
 	void sltSendPathToVlc(const QString& path);
 	void sltSetRate(float rate);

@@ -57,7 +57,7 @@ void VideoList::sltLoadMiedaList()
 	auto fileList = QFileDialog::getOpenFileNames(this,
 		QStringLiteral("选择媒体文件"),
 		".",
-		QStringLiteral("媒体文件(*.avi *.mp4 *.flv *.mkv*.mp3 *.wav *.wma);"));
+		QStringLiteral("媒体文件(*.avi *.mp4 *.flv *.mkv *.mp3 *.wav *.wma);"));
 
 	if (fileList.isEmpty()) return;
 	m_videoPathMap.clear();

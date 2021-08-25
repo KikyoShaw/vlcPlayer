@@ -6,12 +6,20 @@
 static void handleEvents(const libvlc_event_t *event, void *userData)
 {
 	vlcPlayerManager* obj = (vlcPlayerManager*)userData;
-
 	switch (event->type) {
+	//加载进度
+	case libvlc_MediaPlayerBuffering: {
+		break;
+	}
 	// 加载完成
 	case libvlc_MediaPlayerVout:{
 		auto duration = obj->GetTime() / 1000;
 		emit obj->playToralTime(duration);
+		break;
+	}
+	case libvlc_MediaPlayerPlaying:{
+		auto duration = obj->GetTime() / 1000;
+		emit obj->playToralTimeAudio(duration);
 		break;
 	}
 	// media player 位置改变
@@ -66,6 +74,8 @@ int vlcPlayerManager::Play(QString filename, void* hwnd)
 		if (m_pVLC_Player){
 			libvlc_media_release(media);
 			m_pVLC_eMg = libvlc_media_player_event_manager(m_pVLC_Player);
+			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerBuffering, handleEvents, this);
+			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerPlaying, handleEvents, this);
 			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerVout, handleEvents, this);
 			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerEndReached, handleEvents, this);
 			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerPositionChanged, handleEvents, this);
@@ -90,6 +100,7 @@ int vlcPlayerManager::PlayUrl(QString url, void* hwnd)
 		if (m_pVLC_Player){
 			libvlc_media_parse(media);
 			m_pVLC_eMg = libvlc_media_player_event_manager(m_pVLC_Player);
+			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerPlaying, handleEvents, this);
 			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerVout, handleEvents, this);
 			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerEndReached, handleEvents, this);
 			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerPositionChanged, handleEvents, this);
