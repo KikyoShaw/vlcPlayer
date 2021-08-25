@@ -34,6 +34,7 @@ private slots:
 	void sltVlcMediaPlayerVount(int duration);
 	void sltVlcMediaPlayerVountAudio(int duration);
 	void sltVlcMediaPlayerTimeChange(int position);
+	void sltSendIndexToVlc(int index);
 	void sltSendPathToVlc(const QString& path);
 	void sltSetRate(float rate);
 
@@ -68,4 +69,6 @@ private:
 	QMovie *m_loadGif = nullptr;
 	//播放进度
 	int m_position;
+	//播放列表
+	QStringList m_vlcList;
 };

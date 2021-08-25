@@ -12,10 +12,17 @@ public:
 
 	// 初始化vlc模块
 	void initVlc();
+	//添加列表
+	void addPlayList(const QStringList& pathList, void* hwnd = nullptr);
+	//播放列表播放
+	void PlayList(const QString& filename);
+	void PlayList(int index);
 	// 播放本地文件
-	int Play(QString filename, void* hwnd = nullptr);
+	void Play(const QString& filename, void* hwnd = nullptr);
 	// 播放在线文件
-	int PlayUrl(QString url, void* hwnd = nullptr);
+	void PlayUrl(const QString& url, void* hwnd = nullptr);
+
+
 	//去黑边
 	void RemoveBlack();
 	// 播放
@@ -26,6 +33,9 @@ public:
 	void Stop();
 	// 停止播放
 	void StopPlaying();
+	//停止列表播放
+	void StopPlayList();
+
 	// 音量设置为nVol
 	void SetVolume(int nVol);
 	//获取音量值
@@ -36,6 +46,8 @@ public:
 	bool IsOpen();
 	// 文件是否正在播放
 	bool IsPlaying();
+	//列表是否在播放
+	bool IsListPlaying();
 	// 是否暂停
 	bool IsPause();
 	// 是否播放完成
@@ -50,6 +62,8 @@ public:
 	void SetPlayTime(int64_t time);
 	//获取播放状态
 	int GetPlayState();
+	//获取列表播放状态
+	int GetPlayListState();
 	//设置音轨
 	bool setTrack(int trackIndex);
 	//设置倍速
@@ -73,6 +87,8 @@ private:
 	libvlc_instance_t     *m_pVLC_Inst;
 	//VLC播放器
 	libvlc_media_player_t *m_pVLC_Player;
+	//VLC播放列表
+	libvlc_media_list_player_t *m_pVLC_PlayerList;
 	//VLC事件
 	libvlc_event_manager_t *m_pVLC_eMg;
 

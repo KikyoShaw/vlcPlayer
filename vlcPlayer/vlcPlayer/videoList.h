@@ -17,7 +17,9 @@ private slots:
 	void sltListWidgetDoubleClicked(QListWidgetItem * item);
 
 signals:
+	void sigSendIndexToVlc(int index);
 	void sigSendPathToVlc(const QString& fileName);
+	void sigSendPathListToVlc(const QStringList& videoList);
 
 private:
 	Ui::mediaList ui;

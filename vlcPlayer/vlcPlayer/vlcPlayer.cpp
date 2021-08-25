@@ -11,7 +11,7 @@
 vlcPlayer::vlcPlayer(QWidget *parent)
     : QWidget(parent), m_bMove(false), m_point(QPoint()), 
 	m_totalTime(QString()), m_volumn(100), m_isFinishPlay(false),
-	m_position(0)
+	m_position(0), m_vlcList(QStringList())
 {
     ui.setupUi(this);
 	setWindowFlags(Qt::FramelessWindowHint | Qt::WindowSystemMenuHint | Qt::WindowMinimizeButtonHint);
@@ -76,8 +76,15 @@ void vlcPlayer::initVideoList()
 {
 	m_videoList = QSharedPointer<VideoList>(new VideoList(this));
 	if (m_videoList) {
-		m_videoList->setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
+		m_videoList->setWindowFlags(Qt::FramelessWindowHint | Qt::Tool); 
 		connect(m_videoList.data(), &VideoList::sigSendPathToVlc, this, &vlcPlayer::sltSendPathToVlc);
+		connect(m_videoList.data(), &VideoList::sigSendIndexToVlc, this, &vlcPlayer::sltSendIndexToVlc);
+		connect(m_videoList.data(), &VideoList::sigSendPathListToVlc, this, [=](const QStringList &videoList) {
+			m_vlcList = videoList;
+			if (m_vlcPlayer) {
+				m_vlcPlayer->addPlayList(m_vlcList, (void*)ui.widget_player->winId());
+			}
+		});
 	}
 }
 
@@ -233,13 +240,26 @@ void vlcPlayer::sltVlcMediaPlayerTimeChange(int position)
 	/*}*/
 }
 
+void vlcPlayer::sltSendIndexToVlc(int index)
+{
+	if (m_videoList) {
+		m_videoList->setVisible(false);
+	}
+	if (m_vlcPlayer) {
+		m_vlcPlayer->PlayList(index);
+	}
+}
+
 void vlcPlayer::sltSendPathToVlc(const QString & path)
 {
 	if (m_videoList) {
 		m_videoList->setVisible(false);
 	}
 	if (m_vlcPlayer) {
-		m_vlcPlayer->Play(path, (void*)ui.widget_player->winId());
+		//m_vlcPlayer->Play(path, (void*)ui.widget_player->winId());
+		if (m_vlcList.contains(path)) {
+			m_vlcPlayer->PlayList(path);
+		}
 	}
 }
 

@@ -43,6 +43,7 @@ void VideoList::sltListWidgetDoubleClicked(QListWidgetItem * item)
 	auto row = ui.listWidget_localList->currentRow();
 	QString fileName = QString();
 	if (m_videoPathMap.contains(row)) {
+		emit sigSendIndexToVlc(row);
 		fileName = m_videoPathMap.value(row);
 	}
 
@@ -79,4 +80,7 @@ void VideoList::sltLoadMiedaList()
 			m_videoPathMap.insert(i, videoPath);
 		}
 	}
+
+	QStringList videoList = m_videoPathMap.values();
+	emit sigSendPathListToVlc(videoList);
 }

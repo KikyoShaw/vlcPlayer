@@ -56,11 +56,76 @@ void vlcPlayerManager::initVlc()
 	m_pVLC_Inst = libvlc_new(0, NULL);
 }
 
-int vlcPlayerManager::Play(QString filename, void* hwnd)
+void vlcPlayerManager::addPlayList(const QStringList& pathList, void * hwnd)
+{
+	libvlc_media_list_t *mediaList;
+	mediaList = libvlc_media_list_new(m_pVLC_Inst);
+	for (auto &each : pathList) {
+		libvlc_media_t *media;
+		media = libvlc_media_new_path(m_pVLC_Inst, each.toStdString().data());
+		if (media) {
+			libvlc_media_list_add_media(mediaList, media);
+			libvlc_media_release(media);
+		}
+	}
+	m_pVLC_PlayerList = libvlc_media_list_player_new(m_pVLC_Inst);
+	m_pVLC_Player = libvlc_media_player_new(m_pVLC_Inst);
+	if (mediaList) {
+		if (m_pVLC_PlayerList && m_pVLC_Player) {
+			libvlc_media_list_player_set_media_list(m_pVLC_PlayerList, mediaList);
+			libvlc_media_list_player_set_media_player(m_pVLC_PlayerList, m_pVLC_Player);
+			libvlc_media_list_player_set_playback_mode(m_pVLC_PlayerList, libvlc_playback_mode_loop);
+			m_pVLC_eMg = libvlc_media_player_event_manager(m_pVLC_Player);
+			if (m_pVLC_eMg) {
+				libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerPlaying, handleEvents, this);
+				libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerVout, handleEvents, this);
+				libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerPositionChanged, handleEvents, this);
+			}
+			if (hwnd != nullptr) {
+				libvlc_media_player_set_hwnd(m_pVLC_Player, hwnd);
+			}
+		}
+	}
+}
+
+void vlcPlayerManager::PlayList(const QString& filename)
+{
+	if (this->IsListPlaying()) {
+		StopPlayList();
+	}
+	//播放
+	if (m_pVLC_PlayerList) {
+		//播放指定文件
+		libvlc_media_t *media;
+		media = libvlc_media_new_path(m_pVLC_Inst, filename.toStdString().data());
+		if (media) {
+			auto ret = libvlc_media_list_player_play_item(m_pVLC_PlayerList, media);
+			libvlc_media_release(media);
+			//qInfo() << "ret = " << ret;
+		}
+		//libvlc_media_list_player_play(m_pVLC_PlayerList);
+	}
+}
+
+void vlcPlayerManager::PlayList(int index)
+{
+	if (this->IsListPlaying()) {
+		StopPlayList();
+	}
+	//播放
+	if (m_pVLC_PlayerList) {
+		//播放指定文件
+		auto ret = libvlc_media_list_player_play_item_at_index(m_pVLC_PlayerList, index);
+		//qInfo() << "ret = " << ret;
+		//libvlc_media_list_player_play(m_pVLC_PlayerList);
+	}
+}
+
+void vlcPlayerManager::Play(const QString& filename, void* hwnd)
 {
 	if (!QFile::exists(filename)) {
-		qDebug() << "file is not exist:" << filename;
-		return -1;
+		qInfo() << "file is not exist:" << filename;
+		return;
 	}
 	////组装文件
 	//filename = "file:///" + filename;
@@ -74,21 +139,22 @@ int vlcPlayerManager::Play(QString filename, void* hwnd)
 		if (m_pVLC_Player){
 			libvlc_media_release(media);
 			m_pVLC_eMg = libvlc_media_player_event_manager(m_pVLC_Player);
-			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerBuffering, handleEvents, this);
-			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerPlaying, handleEvents, this);
-			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerVout, handleEvents, this);
-			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerEndReached, handleEvents, this);
-			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerPositionChanged, handleEvents, this);
+			if (m_pVLC_eMg) {
+				libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerBuffering, handleEvents, this);
+				libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerPlaying, handleEvents, this);
+				libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerVout, handleEvents, this);
+				libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerEndReached, handleEvents, this);
+				libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerPositionChanged, handleEvents, this);
+			}
 			if (hwnd != nullptr) {
 				libvlc_media_player_set_hwnd(m_pVLC_Player, hwnd);
 			}
 			this->Play();
 		}
 	}
-	return -1;
 }
 
-int vlcPlayerManager::PlayUrl(QString url, void* hwnd)
+void vlcPlayerManager::PlayUrl(const QString& url, void* hwnd)
 {
 	//if (this->IsPlaying())
 	//	this->Stop();
@@ -100,17 +166,18 @@ int vlcPlayerManager::PlayUrl(QString url, void* hwnd)
 		if (m_pVLC_Player){
 			libvlc_media_parse(media);
 			m_pVLC_eMg = libvlc_media_player_event_manager(m_pVLC_Player);
-			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerPlaying, handleEvents, this);
-			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerVout, handleEvents, this);
-			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerEndReached, handleEvents, this);
-			libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerPositionChanged, handleEvents, this);
+			if (m_pVLC_eMg) {
+				libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerPlaying, handleEvents, this);
+				libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerVout, handleEvents, this);
+				libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerEndReached, handleEvents, this);
+				libvlc_event_attach(m_pVLC_eMg, libvlc_MediaPlayerPositionChanged, handleEvents, this);
+			}
 			if (hwnd != nullptr) {
 				libvlc_media_player_set_hwnd(m_pVLC_Player, hwnd);
 			}
 			this->Play();
 		}
 	}
-	return -1;
 }
 
 void vlcPlayerManager::RemoveBlack()
@@ -126,7 +193,7 @@ void vlcPlayerManager::RemoveBlack()
 	if (!m_pVLC_Player)
 		return;
 
-	libvlc_video_set_aspect_ratio(m_pVLC_Player, "16:10");
+	libvlc_video_set_aspect_ratio(m_pVLC_Player, "16:9");
 }
 
 int vlcPlayerManager::Play()
@@ -163,6 +230,27 @@ void vlcPlayerManager::StopPlaying()
 	}
 }
 
+void vlcPlayerManager::StopPlayList()
+{
+	if (m_pVLC_Player) {
+		if (GetPlayState() != libvlc_Ended) {
+			libvlc_media_player_pause(m_pVLC_Player);
+			libvlc_media_player_stop(m_pVLC_Player);
+		}
+		libvlc_media_player_release(m_pVLC_Player);
+		m_pVLC_Player = NULL;
+	}
+
+	if (m_pVLC_PlayerList) {
+		if (GetPlayListState() != libvlc_Ended) {
+			libvlc_media_list_player_pause(m_pVLC_PlayerList);
+			libvlc_media_list_player_stop(m_pVLC_PlayerList);
+		}
+		libvlc_media_list_player_release(m_pVLC_PlayerList);
+		m_pVLC_PlayerList = NULL;
+	}
+}
+
 void vlcPlayerManager::SetVolume(int nVol)
 {
 	if (m_pVLC_Player){
@@ -194,6 +282,14 @@ bool vlcPlayerManager::IsPlaying()
 {
 	if (m_pVLC_Player){
 		return libvlc_media_player_is_playing(m_pVLC_Player);
+	}
+	return false;
+}
+
+bool vlcPlayerManager::IsListPlaying()
+{
+	if (m_pVLC_PlayerList) {
+		return libvlc_media_list_player_is_playing(m_pVLC_PlayerList);
 	}
 	return false;
 }
@@ -265,6 +361,14 @@ int vlcPlayerManager::GetPlayState()
 	return -1;
 }
 
+int vlcPlayerManager::GetPlayListState()
+{
+	if (m_pVLC_PlayerList) {
+		return libvlc_media_list_player_get_state(m_pVLC_PlayerList);
+	}
+	return -1;
+}
+
 bool vlcPlayerManager::setTrack(int trackIndex)
 {
 	if (m_pVLC_Player) {
@@ -288,6 +392,12 @@ void vlcPlayerManager::Release()
 		m_pVLC_Player = NULL;
 
 	}
+	if (m_pVLC_PlayerList) {
+		libvlc_media_list_player_stop(m_pVLC_PlayerList);
+		libvlc_media_list_player_release(m_pVLC_PlayerList);
+		m_pVLC_PlayerList = NULL;
+	}
+
 	if (m_pVLC_Inst){
 		libvlc_release(m_pVLC_Inst);
 		m_pVLC_Inst = NULL;
