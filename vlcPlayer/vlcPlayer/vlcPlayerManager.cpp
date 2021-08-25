@@ -241,14 +241,14 @@ void vlcPlayerManager::StopPlayList()
 		m_pVLC_Player = NULL;
 	}
 
-	if (m_pVLC_PlayerList) {
+	/*if (m_pVLC_PlayerList) {
 		if (GetPlayListState() != libvlc_Ended) {
 			libvlc_media_list_player_pause(m_pVLC_PlayerList);
 			libvlc_media_list_player_stop(m_pVLC_PlayerList);
 		}
 		libvlc_media_list_player_release(m_pVLC_PlayerList);
 		m_pVLC_PlayerList = NULL;
-	}
+	}*/
 }
 
 void vlcPlayerManager::SetVolume(int nVol)
