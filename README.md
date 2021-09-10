@@ -10,22 +10,13 @@
 4.支持列表播放，可设置列表循环，随机播放，单一循环
 
 
-开发资料
-
-libvlc git
-
-https://www.videolan.org/vlc/libvlc.html
-
-libvlc wiki
-
-https://wiki.videolan.org/LibVLC/
-
-https://wiki.videolan.org/
-
-libvlc api
-
-https://videolan.videolan.me/vlc/group__libvlc.html
-
-vlc github
-
+开发资料 
+libvlc git 
+https://www.videolan.org/vlc/libvlc.html 
+libvlc wiki 
+https://wiki.videolan.org/LibVLC/ 
+https://wiki.videolan.org/ 
+libvlc api 
+https://videolan.videolan.me/vlc/group__libvlc.html 
+vlc github 
 https://github.com/videolan/vlc
