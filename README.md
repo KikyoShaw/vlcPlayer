@@ -8,3 +8,16 @@
 3.支持声音调整、播放与暂停、播放进度调整
 
 4.支持列表播放，可设置列表循环，随机播放，单一循环
+
+libvlc git
+https://www.videolan.org/vlc/libvlc.html
+
+libvlc wiki
+https://wiki.videolan.org/LibVLC/
+https://wiki.videolan.org/
+
+libvlc api
+https://videolan.videolan.me/vlc/group__libvlc.html
+
+vlc github
+https://github.com/videolan/vlc
