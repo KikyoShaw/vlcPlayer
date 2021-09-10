@@ -11,15 +11,16 @@
 
 
 开发资料 
-libvlc git 
+
+libvlc git：
 https://www.videolan.org/vlc/libvlc.html 
 
-libvlc wiki 
+libvlc wiki：
 https://wiki.videolan.org/LibVLC/ 
 https://wiki.videolan.org/ 
 
-libvlc api 
+libvlc api：
 https://videolan.videolan.me/vlc/group__libvlc.html 
 
-vlc github 
+vlc github：
 https://github.com/videolan/vlc
