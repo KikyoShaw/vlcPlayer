@@ -24,6 +24,9 @@ https://wiki.videolan.org/
 libvlc api：
 https://videolan.videolan.me/vlc/group__libvlc.html 
 
+libvlc rebuild：
+https://wiki.videolan.org/Win32CompileMSYSNew
+
 vlc github：
 https://github.com/videolan/vlc
 
