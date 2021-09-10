@@ -24,3 +24,6 @@ https://videolan.videolan.me/vlc/group__libvlc.html
 
 vlc github：
 https://github.com/videolan/vlc
+
+vlc download：
+http://download.videolan.org/pub/videolan/vlc/
