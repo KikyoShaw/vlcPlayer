@@ -9,6 +9,8 @@
 
 4.支持列表播放，可设置列表循环，随机播放，单一循环
 
+
+开发资料
 libvlc git
 https://www.videolan.org/vlc/libvlc.html
 
