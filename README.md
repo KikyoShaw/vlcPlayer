@@ -17,6 +17,8 @@ https://www.videolan.org/vlc/libvlc.html
 
 libvlc wiki：
 https://wiki.videolan.org/LibVLC/ 
+
+vlc wiki
 https://wiki.videolan.org/ 
 
 libvlc api：
