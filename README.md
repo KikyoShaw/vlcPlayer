@@ -1,4 +1,6 @@
 # vlcPlayer
+
+#### 介绍
 基于VLC+Qt+Vs2017开发的视频播放器
 
 1.支持本地媒体文件播放
@@ -9,8 +11,9 @@
 
 4.支持列表播放，可设置列表循环，随机播放，单一循环
 
+#### 效果图
 
-开发资料 
+#### 开发资料 
 
 libvlc git：
 https://www.videolan.org/vlc/libvlc.html 

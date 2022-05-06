@@ -1,7 +1,7 @@
 #include "videoControls.h"
 #include "vsliderwidget.h"
 
-constexpr char* Property_Rate = "RateValue";
+const char* Property_Rate = "RateValue";
 
 VideoControls::VideoControls(QWidget *parent)
 	:QWidget(parent)
