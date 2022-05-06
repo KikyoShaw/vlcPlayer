@@ -12,7 +12,7 @@
 4.支持列表播放，可设置列表循环，随机播放，单一循环
 
 #### 效果图
-![image](https://github.com/KikyoShaw/vlcPlayer/tree/master/GIF/16.gif)
+![image](https://github.com/KikyoShaw/vlcPlayer/blob/master/GIF/16.gif)
 
 #### 开发资料 
 
